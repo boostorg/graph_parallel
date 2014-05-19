@@ -1237,6 +1237,12 @@ brandes_betweenness_centrality(const Graph& g,
                                typename property_traits<DistanceMap>::value_type delta
                                BOOST_GRAPH_ENABLE_IF_MODELS_PARM(Graph,distributed_graph_tag))
 {
+
+  // default constant multiplicity of one
+  typedef typename property_traits<PathCountMap>::value_type multiplicity_type;
+  typedef static_property_map<multiplicity_type> MultiplicityMap;
+  MultiplicityMap multiplicity_map(detail::graph::one<multiplicity_type>());
+
   typedef typename property_traits<DistanceMap>::value_type distance_type;
   typedef static_property_map<distance_type> WeightMap;
 
@@ -1451,12 +1457,9 @@ non_distributed_brandes_betweenness_centrality(const ProcessGroup& pg,
                                                Buffer sources)
 {
   // default constant multiplicity of one
-  typedef typename graph_traits<Graph>::edge_descriptor edge_descriptor;
   typedef typename property_traits<PathCountMap>::value_type multiplicity_type;
-  typedef static_property_map<multiplicity_type, edge_descriptor> MultiplicityMap;
-
-  MultiplicityMap multiplicity_map =
-      detail::graph::make_static_one_property<MultiplicityMap>(g);
+  typedef static_property_map<multiplicity_type> MultiplicityMap;
+  MultiplicityMap multiplicity_map(detail::graph::one<multiplicity_type>());
 
   typedef detail::graph::make_shortest_paths<dummy_property_map, MultiplicityMap> make;
   typedef typename make::type ShortestPaths;
@@ -1489,12 +1492,9 @@ non_distributed_brandes_betweenness_centrality(const ProcessGroup& pg,
                                                Buffer sources)
 {
   // default constant multiplicity of one
-  typedef typename graph_traits<Graph>::edge_descriptor edge_descriptor;
   typedef typename property_traits<PathCountMap>::value_type multiplicity_type;
-  typedef static_property_map<multiplicity_type, edge_descriptor> MultiplicityMap;
-
-  MultiplicityMap multiplicity_map =
-      detail::graph::make_static_one_property<MultiplicityMap>(g);
+  typedef static_property_map<multiplicity_type> MultiplicityMap;
+  MultiplicityMap multiplicity_map(detail::graph::one<multiplicity_type>());
 
   typedef detail::graph::make_shortest_paths<WeightMap, MultiplicityMap> make;
   typedef typename make::type ShortestPaths;
