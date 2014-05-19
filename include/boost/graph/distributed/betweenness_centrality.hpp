@@ -1450,7 +1450,17 @@ non_distributed_brandes_betweenness_centrality(const ProcessGroup& pg,
                                                VertexIndexMap vertex_index,
                                                Buffer sources)
 {
-  detail::graph::brandes_unweighted_shortest_paths shortest_paths;
+  // default constant multiplicity of one
+  typedef typename graph_traits<Graph>::edge_descriptor edge_descriptor;
+  typedef typename property_traits<PathCountMap>::value_type multiplicity_type;
+  typedef static_property_map<multiplicity_type, edge_descriptor> MultiplicityMap;
+
+  MultiplicityMap multiplicity_map =
+      detail::graph::make_static_one_property<MultiplicityMap>(g);
+
+  typedef detail::graph::make_shortest_paths<dummy_property_map, MultiplicityMap> make;
+  typedef typename make::type ShortestPaths;
+  ShortestPaths shortest_paths = make()(dummy_property_map(), multiplicity_map);
   
   graph::parallel::detail::non_distributed_brandes_betweenness_centrality_impl(pg, g, centrality, 
                                                                                edge_centrality_map,
@@ -1478,7 +1488,17 @@ non_distributed_brandes_betweenness_centrality(const ProcessGroup& pg,
                                                WeightMap weight_map,
                                                Buffer sources)
 {
-  detail::graph::brandes_dijkstra_shortest_paths<WeightMap> shortest_paths(weight_map);
+  // default constant multiplicity of one
+  typedef typename graph_traits<Graph>::edge_descriptor edge_descriptor;
+  typedef typename property_traits<PathCountMap>::value_type multiplicity_type;
+  typedef static_property_map<multiplicity_type, edge_descriptor> MultiplicityMap;
+
+  MultiplicityMap multiplicity_map =
+      detail::graph::make_static_one_property<MultiplicityMap>(g);
+
+  typedef detail::graph::make_shortest_paths<WeightMap, MultiplicityMap> make;
+  typedef typename make::type ShortestPaths;
+  ShortestPaths shortest_paths = make()(weight_map, multiplicity_map);
 
   graph::parallel::detail::non_distributed_brandes_betweenness_centrality_impl(pg, g, centrality, 
                                                                                edge_centrality_map,
