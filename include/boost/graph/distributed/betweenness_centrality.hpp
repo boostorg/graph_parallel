@@ -1241,7 +1241,7 @@ brandes_betweenness_centrality(const Graph& g,
   // default constant multiplicity of one
   typedef typename property_traits<PathCountMap>::value_type multiplicity_type;
   typedef static_property_map<multiplicity_type> MultiplicityMap;
-  MultiplicityMap multiplicity_map(detail::graph::one<multiplicity_type>());
+  MultiplicityMap multiplicity_map(multiplicity_type(1));
 
   typedef typename property_traits<DistanceMap>::value_type distance_type;
   typedef static_property_map<distance_type> WeightMap;
@@ -1459,7 +1459,7 @@ non_distributed_brandes_betweenness_centrality(const ProcessGroup& pg,
   // default constant multiplicity of one
   typedef typename property_traits<PathCountMap>::value_type multiplicity_type;
   typedef static_property_map<multiplicity_type> MultiplicityMap;
-  MultiplicityMap multiplicity_map(detail::graph::one<multiplicity_type>());
+  MultiplicityMap multiplicity_map(multiplicity_type(1));
 
   typedef detail::graph::make_shortest_paths<dummy_property_map, MultiplicityMap> make;
   typedef typename make::type ShortestPaths;
@@ -1494,7 +1494,7 @@ non_distributed_brandes_betweenness_centrality(const ProcessGroup& pg,
   // default constant multiplicity of one
   typedef typename property_traits<PathCountMap>::value_type multiplicity_type;
   typedef static_property_map<multiplicity_type> MultiplicityMap;
-  MultiplicityMap multiplicity_map(detail::graph::one<multiplicity_type>());
+  MultiplicityMap multiplicity_map(multiplicity_type(1));
 
   typedef detail::graph::make_shortest_paths<WeightMap, MultiplicityMap> make;
   typedef typename make::type ShortestPaths;
