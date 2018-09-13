@@ -12,6 +12,8 @@
 #error "Parallel BGL files should not be included unless <boost/graph/use_mpi.hpp> has been included"
 #endif
 
+#include <boost/graph/parallel/dll_import_export.hpp>
+
 #include <vector>
 
 namespace boost { namespace graph { namespace distributed { namespace detail {
@@ -26,7 +28,7 @@ namespace boost { namespace graph { namespace distributed { namespace detail {
  * tag is returned and may be reallocated. These tags should be used,
  * for example, for one-time communication of values.
  */
-class tag_allocator {
+class BOOST_GRAPH_PARALLEL_DECL tag_allocator {
 public:
   class token;
   friend class token;
@@ -51,7 +53,7 @@ private:
 /**
  * A token used to represent an allocated tag. 
  */
-class tag_allocator::token {
+class BOOST_GRAPH_PARALLEL_DECL tag_allocator::token {
 public:
   /// Transfer ownership of the tag from @p other.
   token(const token& other);
