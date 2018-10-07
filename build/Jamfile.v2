@@ -7,7 +7,7 @@
 import mpi ;
 
 project boost/graph_parallel
-    : requirements <include>../src <visibility>global
+    : requirements <include>../src
     : source-location ../src
     ;
 
@@ -27,6 +27,7 @@ if [ mpi.configured ]
       # Without these flags, MSVC 7.1 crash
       # User reports that VC++ 8 no longer has this problem
       <toolset>msvc-7.1:<cxxflags>-GR-
+      <local-visibility>global
     ;
 
 }
