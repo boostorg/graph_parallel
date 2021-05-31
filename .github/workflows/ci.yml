@@ -46,7 +46,7 @@ jobs:
         run: ./b2 headers
         working-directory: ../boost-root
       - name: Generate user config
-        run: 'echo "using $TOOLSET : : ${{ matrix.compiler }} ;\nusing mpi ;\n" > ~/user-config.jam'
+        run: 'echo "using $TOOLSET : : ${{ matrix.compiler }} ;" > ~/user-config.jam && echo "using mpi ;" >> ~/user-config.jam'
         working-directory: ../boost-root
       - name: Config info
         run: ../../../b2 print_config_info toolset=$TOOLSET cxxstd=03,11,14,17,2a
@@ -93,7 +93,7 @@ jobs:
         run: ./b2 headers
         working-directory: ../boost-root
       - name: Generate user config
-        run: 'echo "using $TOOLSET : : ${{ matrix.compiler }} ;\nusing mpi ;\n" > ~/user-config.jam'
+        run: 'echo "using $TOOLSET : : ${{ matrix.compiler }} ;" > ~/user-config.jam && echo "using mpi ;" >> ~/user-config.jam'
         working-directory: ../boost-root
       - name: Config info install
         run: ../../../b2 print_config_info toolset=$TOOLSET cxxstd=03,11,14,17
