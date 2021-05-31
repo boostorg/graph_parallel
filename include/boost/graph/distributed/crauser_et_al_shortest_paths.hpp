@@ -37,7 +37,7 @@
 #include <boost/graph/iteration_macros.hpp>
 #include <boost/property_map/property_map_iterator.hpp>
 #include <boost/type_traits/is_same.hpp>
-#include <algorithm>
+#include <boost/algorithm/minmax_element.hpp>
 #include <boost/property_map/parallel/caching_property_map.hpp>
 #include <boost/pending/indirect_cmp.hpp>
 #include <boost/graph/distributed/detail/remote_update_set.hpp>
@@ -472,7 +472,7 @@ namespace detail {
         }
         std::cerr << std::endl;
         put(min_in_weight, v,
-            *std::min_element
+            *boost::first_min_element
             (make_property_map_iterator(weight, in_edges(v, g).first),
              make_property_map_iterator(weight, in_edges(v, g).second),
              compare));
@@ -514,7 +514,7 @@ namespace detail {
     BGL_FORALL_VERTICES_T(v, g, Graph) {
       if (out_edges(v, g).first != out_edges(v, g).second) {
         put(min_out_weight, v,
-            *std::min_element
+            *boost::first_min_element
             (make_property_map_iterator(weight, out_edges(v, g).first),
              make_property_map_iterator(weight, out_edges(v, g).second),
              compare));
