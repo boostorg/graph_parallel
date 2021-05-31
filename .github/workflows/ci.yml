@@ -122,10 +122,10 @@ jobs:
         run: git submodule update --init tools/boostdep
         working-directory: ../boost-root
       - name: Copy files
-        run: cp -r $GITHUB_WORKSPACE/* libs/graph
+        run: cp -r $GITHUB_WORKSPACE/* libs/graph_parallel
         working-directory: ../boost-root
       - name: Install deps
-        run: python tools/boostdep/depinst/depinst.py graph
+        run: python tools/boostdep/depinst/depinst.py graph_parallel
         working-directory: ../boost-root
       - name: Bootstrap
         run: ./bootstrap.sh
@@ -142,4 +142,4 @@ jobs:
         working-directory: ../boost-root/libs/config/test
       - name: Test
         run: ../../../b2 toolset=${{ matrix.toolset }} cxxstd=03,11,14,17,2a define=CI_SUPPRESS_KNOWN_ISSUES
-        working-directory: ../boost-root/libs/graph/test
+        working-directory: ../boost-root/libs/graph_parallel/test
