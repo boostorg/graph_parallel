@@ -30,6 +30,7 @@
 #include <boost/type_traits/is_same.hpp>
 #include <boost/assert.hpp>
 #include <list>
+#include <iterator>
 #include <algorithm>
 #include <boost/limits.hpp>
 #include <boost/graph/parallel/properties.hpp>
@@ -1421,7 +1422,7 @@ namespace boost {
     /// Iterator over the neighbors of a vertex
     typedef boost::adjacency_iterator<
               adjacency_list, vertex_descriptor, out_edge_iterator,
-              typename detail::iterator_traits<base_out_edge_iterator>
+              typename std::iterator_traits<base_out_edge_iterator>
                          ::difference_type>
       adjacency_iterator;
 
