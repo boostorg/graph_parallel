@@ -52,7 +52,7 @@ jobs:
         run: ../../../b2 print_config_info toolset=$TOOLSET cxxstd=03,11,14,17,2a
         working-directory: ../boost-root/libs/config/test
       - name: Test
-        run: ../../../b2 toolset=$TOOLSET cxxstd=03,11,14,17,2a
+        run: echo "using mpi ;\n" > ~/user-config.jam && ../../../b2 toolset=$TOOLSET cxxstd=03,11,14,17,2a
         working-directory: ../boost-root/libs/graph_parallel/test
   ubuntu-bionic:
     runs-on: ubuntu-18.04
