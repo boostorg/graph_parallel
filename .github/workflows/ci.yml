@@ -46,13 +46,13 @@ jobs:
         run: ./b2 headers
         working-directory: ../boost-root
       - name: Generate user config
-        run: 'echo "using $TOOLSET : : ${{ matrix.compiler }} ;" > ~/user-config.jam'
+        run: 'echo "using $TOOLSET : : ${{ matrix.compiler }} ;\nusing mpi ;\n" > ~/user-config.jam'
         working-directory: ../boost-root
       - name: Config info
         run: ../../../b2 print_config_info toolset=$TOOLSET cxxstd=03,11,14,17,2a
         working-directory: ../boost-root/libs/config/test
       - name: Test
-        run: echo "using mpi ;\n" > ~/user-config.jam && ../../../b2 toolset=$TOOLSET cxxstd=03,11,14,17,2a
+        run: ../../../b2 toolset=$TOOLSET cxxstd=03,11,14,17,2a
         working-directory: ../boost-root/libs/graph_parallel/test
   ubuntu-bionic:
     runs-on: ubuntu-18.04
@@ -93,7 +93,7 @@ jobs:
         run: ./b2 headers
         working-directory: ../boost-root
       - name: Generate user config
-        run: 'echo "using $TOOLSET : : ${{ matrix.compiler }} ;" > ~/user-config.jam'
+        run: 'echo "using $TOOLSET : : ${{ matrix.compiler }} ;\nusing mpi ;\n" > ~/user-config.jam'
         working-directory: ../boost-root
       - name: Config info install
         run: ../../../b2 print_config_info toolset=$TOOLSET cxxstd=03,11,14,17
