@@ -15,6 +15,7 @@
 #error "Parallel BGL files should not be included unless <boost/graph/use_mpi.hpp> has been included"
 #endif
 
+#include <boost/core/uncaught_exceptions.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/properties.hpp>
 #include <boost/graph/graph_traits.hpp>
@@ -2286,7 +2287,7 @@ namespace boost {
     /// If this vertex has already been created or will be created by
     /// someone else, or if someone threw an exception, we will not
     /// create the vertex now.
-    if (committed || std::uncaught_exception())
+    if (committed || boost::core::uncaught_exceptions() > 0)
       return;
 
     committed = true;
@@ -2399,7 +2400,7 @@ namespace boost {
     /// If this edge has already been created or will be created by
     /// someone else, or if someone threw an exception, we will not
     /// create the edge now.
-    if (committed || std::uncaught_exception())
+    if (committed || boost::core::uncaught_exceptions() > 0)
       return;
 
     committed = true;
@@ -2584,7 +2585,7 @@ namespace boost {
     /// If this edge has already been created or will be created by
     /// someone else, or if someone threw an exception, we will not
     /// create the edge now.
-    if (this->committed || std::uncaught_exception())
+    if (this->committed || boost::core::uncaught_exceptions() > 0)
       return;
 
     this->committed = true;
