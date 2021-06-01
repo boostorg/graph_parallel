@@ -96,8 +96,10 @@ namespace detail {
   template<typename Vertex, typename DistanceMap, typename MinInWeightMap,
            typename Combine, typename Compare>
   struct min_in_distance_compare
-    : std::binary_function<Vertex, Vertex, bool>
   {
+    typedef Vertex first_argument_type;
+    typedef Vertex second_argument_type;
+    typedef bool result_type;
     min_in_distance_compare(DistanceMap d, MinInWeightMap m,
                             Combine combine, Compare compare)
       : distance_map(d), min_in_weight(m), combine(combine),
@@ -121,8 +123,10 @@ namespace detail {
   template<typename Vertex, typename DistanceMap, typename MinOutWeightMap,
            typename Combine, typename Compare>
   struct min_out_distance_compare
-    : std::binary_function<Vertex, Vertex, bool>
   {
+    typedef Vertex first_argument_type;
+    typedef Vertex second_argument_type;
+    typedef bool result_type;
     min_out_distance_compare(DistanceMap d, MinOutWeightMap m,
                              Combine combine, Compare compare)
       : distance_map(d), min_out_weight(m), combine(combine),
