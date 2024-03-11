@@ -1,0 +1,46 @@
+# Copyright René Ferdinand Rivera Morell 2024
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at
+# http://www.boost.org/LICENSE_1_0.txt)
+
+import project ;
+
+project /boost/graph_parallel
+    : common-requirements
+        <source>/boost/algorithm//boost_algorithm
+        <source>/boost/assert//boost_assert
+        <source>/boost/concept_check//boost_concept_check
+        <source>/boost/config//boost_config
+        <source>/boost/container_hash//boost_container_hash
+        <source>/boost/core//boost_core
+        <source>/boost/detail//boost_detail
+        <source>/boost/dynamic_bitset//boost_dynamic_bitset
+        <source>/boost/filesystem//boost_filesystem
+        <source>/boost/foreach//boost_foreach
+        <source>/boost/function//boost_function
+        <source>/boost/graph//boost_graph
+        <source>/boost/iterator//boost_iterator
+        <source>/boost/lexical_cast//boost_lexical_cast
+        <source>/boost/mpi//boost_mpi
+        <source>/boost/mpl//boost_mpl
+        <source>/boost/optional//boost_optional
+        <source>/boost/property_map//boost_property_map
+        <source>/boost/property_map_parallel//boost_property_map_parallel
+        <source>/boost/random//boost_random
+        <source>/boost/serialization//boost_serialization
+        <source>/boost/smart_ptr//boost_smart_ptr
+        <source>/boost/static_assert//boost_static_assert
+        <source>/boost/tuple//boost_tuple
+        <source>/boost/type_traits//boost_type_traits
+        <source>/boost/variant//boost_variant
+        <include>include
+    ;
+
+explicit
+    [ alias boost_graph_parallel : build//boost_graph_parallel ]
+    [ alias all : boost_graph_parallel example test ]
+    ;
+
+call-if : boost-library graph_parallel
+    : install boost_graph_parallel
+    ;
