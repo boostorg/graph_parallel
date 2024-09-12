@@ -16,6 +16,8 @@
 #error "Parallel BGL files should not be included unless <boost/graph/use_mpi.hpp> has been included"
 #endif
 
+#include <boost/graph/parallel/dll_import_export.hpp>
+
 //#define NO_SPLIT_BATCHES
 #define SEND_OOB_BSEND
 
@@ -37,7 +39,7 @@ namespace boost { namespace graph { namespace distributed {
 // Process group tags
 struct mpi_process_group_tag : virtual boost::parallel::linear_process_group_tag { };
 
-class mpi_process_group
+class BOOST_GRAPH_PARALLEL_DECL mpi_process_group
 {
   struct impl;
 
@@ -622,7 +624,7 @@ inline mpi_process_group::process_size_type
 num_processes(const mpi_process_group& pg)
 { return pg.size; }
 
-mpi_process_group::communicator_type communicator(const mpi_process_group& pg);
+BOOST_GRAPH_PARALLEL_DECL mpi_process_group::communicator_type communicator(const mpi_process_group& pg);
 
 template<typename T>
 void
@@ -655,10 +657,10 @@ mpi_process_group::process_id_type
 receive(const mpi_process_group& pg,
         mpi_process_group::process_id_type source, int tag, T& value);
 
-optional<std::pair<mpi_process_group::process_id_type, int> >
+BOOST_GRAPH_PARALLEL_DECL optional<std::pair<mpi_process_group::process_id_type, int> >
 probe(const mpi_process_group& pg);
 
-void synchronize(const mpi_process_group& pg);
+BOOST_GRAPH_PARALLEL_DECL void synchronize(const mpi_process_group& pg);
 
 template<typename T, typename BinaryOperation>
 T*
