@@ -34,8 +34,6 @@ constant boost_dependencies :
     /boost/variant//boost_variant ;
 
 project /boost/graph_parallel
-    : common-requirements
-        <include>include
     ;
 
 explicit
