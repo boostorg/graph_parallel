@@ -13,8 +13,9 @@ jobs:
       fail-fast: false
       matrix:
         compiler: [ g++-13, g++-14, clang++-19 ]
+        mpi: [ mpich, libopenmpi-dev ]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: '0'
       - uses: mstachniuk/ci-skip@v1
@@ -25,7 +26,7 @@ jobs:
       - name: Set TOOLSET
         run: echo ${{ matrix.compiler }} | awk '/^g/ { print "TOOLSET=gcc" } /^clang/ { print "TOOLSET=clang" }' >> $GITHUB_ENV
       - name: Install packages
-        run: sudo apt install g++-13 g++-14 clang-19 mpich
+        run: sudo apt-get update; sudo apt-get install -y g++-13 g++-14 clang-19 ${{matrix.mpi}}
       - name: Checkout main boost
         run: git clone -b develop --depth 1 https://github.com/boostorg/boost.git ../boost-root
       - name: Update tools/boostdep
@@ -59,7 +60,7 @@ jobs:
       matrix:
         toolset: [ clang ]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: '0'
       - uses: mstachniuk/ci-skip@v1
