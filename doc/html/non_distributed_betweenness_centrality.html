@@ -70,6 +70,24 @@ non_distributed_brandes_betweenness_centrality(const ProcessGroup&amp; pg,
                                                WeightMap weight_map,
                                                Buffer sources);
 
+template&lt;typename ProcessGroup, typename Graph, typename CentralityMap,
+         typename EdgeCentralityMap, typename IncomingMap, typename DistanceMap,
+         typename DependencyMap, typename PathCountMap, typename VertexIndexMap,
+         typename WeightMap, typename MultiplicityMap, typename Buffer&gt;
+void
+non_distributed_brandes_betweenness_centrality(const ProcessGroup&amp; pg,
+                                               const Graph&amp; g,
+                                               CentralityMap centrality,
+                                               EdgeCentralityMap edge_centrality_map,
+                                               IncomingMap incoming,
+                                               DistanceMap distance,
+                                               DependencyMap dependency,
+                                               PathCountMap path_count,
+                                               VertexIndexMap vertex_index,
+                                               WeightMap weight_map,
+                                               MultiplicityMap multiplicity_map,
+                                               Buffer sources);
+
 // helper functions
 template&lt;typename Graph, typename CentralityMap&gt;
 typename property_traits&lt;CentralityMap&gt;::value_type
@@ -172,6 +190,9 @@ integral type. The property map should map from vertices to their
 <dd>A model of <a class="reference external" href="http://www.boost.org/libs/property_map/ReadablePropertyMap.html">Readable Property Map</a> whose key type is the edge
 descriptor type of the graph <tt class="docutils literal"><span class="pre">g</span></tt>.  If not supplied the betweenness
 centrality calculation will be unweighted.</dd>
+<dt>IN:  <tt class="docutils literal"><span class="pre">MultiplicityMap</span> <span class="pre">multiplicity_map</span></tt></dt>
+<dd>A model of <a class="reference external" href="http://www.boost.org/libs/property_map/ReadablePropertyMap.html">Readable Property Map</a> whose key type is the edge
+descriptor type of the graph <tt class="docutils literal"><span class="pre">g</span></tt>.</dd>
 <dt>IN: <tt class="docutils literal"><span class="pre">Buffer</span> <span class="pre">sources</span></tt></dt>
 <dd><p class="first">A model of <a class="reference external" href="http://www.boost.org/libs/graph/doc/Buffer.html">Buffer</a> containing the starting vertices for the
 algorithm.  If <tt class="docutils literal"><span class="pre">sources</span></tt> is empty a complete betweenness
