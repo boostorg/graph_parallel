@@ -505,7 +505,7 @@ void do_oob_receive(mpi_process_group const& self,
   status = self.impl_->comm.probe(source, tag);
 
 #if BOOST_VERSION >= 103600
-  int size = status.count<boost::mpi::packed>().get();
+  int size = status.count<boost::mpi::packed>().value();
 #else
   int size;
   MPI_Status& mpi_status = status;
@@ -959,7 +959,7 @@ receive_oob(const mpi_process_group& pg,
   std::pair<boost::mpi::communicator, int> actual
     = pg.actual_communicator_and_tag(tag, block);
 
-  boost::optional<boost::mpi::status> status;
+  boost::mpi::optional<boost::mpi::status> status;
   do {
     status = actual.first.iprobe(source, actual.second);
     if (!status)
@@ -972,7 +972,7 @@ receive_oob(const mpi_process_group& pg,
   boost::mpi::packed_iarchive in(actual.first);
 
 #if BOOST_VERSION >= 103600
-  in.resize(status->count<boost::mpi::packed>().get());
+  in.resize(status->count<boost::mpi::packed>().value());
 #else
   int size;
   MPI_Status mpi_status = *status;

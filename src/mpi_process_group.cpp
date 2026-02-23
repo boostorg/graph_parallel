@@ -725,7 +725,7 @@ void mpi_process_group::receive_batch(boost::mpi::status& status) const
     
   // Determine how big the receive buffer should be
 #if BOOST_VERSION >= 103600
-  int size = status.count<boost::mpi::packed>().get();
+  int size = status.count<boost::mpi::packed>().value();
 #else
   int size;
   MPI_Status mpi_status(status);
@@ -978,7 +978,7 @@ poll(bool wait, int block, bool synchronizing) const
     impl_->trigger_context = trc_out_of_band;
 
   //wait = false;
-  optional<boost::mpi::status> status;
+  boost::mpi::optional<boost::mpi::status> status;
   bool finished=false;
   optional<std::pair<int, int> > result;
   do {
@@ -993,14 +993,14 @@ poll(bool wait, int block, bool synchronizing) const
 
     if (status) { // we have a message
       // Decode the message
-      std::pair<int, int> decoded = decode_tag(status.get().tag());
-      if (maybe_emit_receive(status.get().source(), status.get().tag()))
+      std::pair<int, int> decoded = decode_tag(status.value().tag());
+      if (maybe_emit_receive(status.value().source(), status.value().tag()))
         // We received the message out-of-band; poll again
         finished = false;
       else if (decoded.first == (block == -1 ? my_block_number() : block)) {
         // This message is for us, but not through a trigger. Return
         // the decoded message.
-        result = std::make_pair(status.get().source(), decoded.second);
+        result = std::make_pair(status.value().source(), decoded.second);
       // otherwise we didn't match any message we know how to deal with, so
       // pretend no message exists.
         finished = true;
