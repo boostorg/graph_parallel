@@ -16,6 +16,7 @@
 #include <boost/assert.hpp>
 #include <boost/graph/parallel/algorithm.hpp>
 #include <boost/graph/parallel/process_group.hpp>
+#include <memory>
 #include <math.h>
 
 namespace boost {
@@ -151,7 +152,7 @@ namespace boost {
   private:
 
       // Parameters
-      shared_ptr<uniform_01<RandomGenerator> > gen;
+      std::shared_ptr<uniform_01<RandomGenerator> > gen;
 
       // Internal data structures
       std::vector<value_type> values;
