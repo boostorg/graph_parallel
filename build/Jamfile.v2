@@ -35,7 +35,6 @@ if [ mpi.configured ]
 }
 else
 {
-  alias boost_graph_parallel ;
   if ! ( --without-graph_parallel in  [ modules.peek : ARGV ] )
   {
     message boost_graph_parallel
@@ -43,5 +42,9 @@ else
       : "note: to enable them, add \"using mpi ;\" to your user-config.jam."
       : "note: to suppress this message, pass \"--without-graph_parallel\" to bjam."
       ;
+  }
+  else
+  {
+    alias boost_graph_parallel ;
   }
 }
