@@ -15,6 +15,7 @@
 #endif
 
 #include <boost/graph/parallel/process_group.hpp>
+#include <boost/graph/parallel/container_traits.hpp>
 #include <boost/graph/filtered_graph.hpp>
 
 namespace boost {

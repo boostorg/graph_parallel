@@ -139,10 +139,6 @@ template<BOOST_DISTRIBUTED_QUEUE_PARMS>
 bool
 BOOST_DISTRIBUTED_QUEUE_TYPE::do_synchronize() const
 {
-#ifdef PBGL_ACCOUNTING
-  ++num_synchronizations;
-#endif
-
   using boost::parallel::all_reduce;
   using std::swap;
 
