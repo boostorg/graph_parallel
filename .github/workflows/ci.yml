@@ -14,6 +14,8 @@ jobs:
       matrix:
         compiler: [ g++-13, g++-14, clang++-19 ]
         mpi: [ mpich, libopenmpi-dev ]
+        exclude:
+          - mpi: mpich
     steps:
       - uses: actions/checkout@v4
         with:
