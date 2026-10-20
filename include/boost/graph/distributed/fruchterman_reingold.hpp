@@ -14,6 +14,7 @@
 #endif
 
 #include <boost/graph/fruchterman_reingold.hpp>
+#include <boost/graph/point_traits.hpp>
 
 namespace boost { namespace graph { namespace distributed {
 

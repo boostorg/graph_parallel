@@ -27,6 +27,7 @@
 #include <boost/graph/distributed/filtered_graph.hpp>
 #include <boost/pending/indirect_cmp.hpp>
 #include <boost/graph/breadth_first_search.hpp>
+#include <boost/graph/strong_components.hpp>
 #include <boost/graph/graph_traits.hpp>
 #include <boost/graph/overloading.hpp>
 #include <boost/graph/distributed/concepts.hpp>

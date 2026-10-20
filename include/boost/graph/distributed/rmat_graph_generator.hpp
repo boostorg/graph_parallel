@@ -16,6 +16,8 @@
 #include <boost/assert.hpp>
 #include <boost/graph/parallel/algorithm.hpp>
 #include <boost/graph/parallel/process_group.hpp>
+#include <boost/graph/graph_traits.hpp>
+#include <boost/graph/rmat_graph_generator.hpp>
 #include <memory>
 #include <math.h>
 
