@@ -63,6 +63,24 @@
                                                  WeightMap weight_map,
                                                  Buffer sources);
 
+  template<typename ProcessGroup, typename Graph, typename CentralityMap, 
+           typename EdgeCentralityMap, typename IncomingMap, typename DistanceMap, 
+           typename DependencyMap, typename PathCountMap, typename VertexIndexMap, 
+           typename WeightMap, typename MultiplicityMap, typename Buffer>
+  void 
+  non_distributed_brandes_betweenness_centrality(const ProcessGroup& pg,
+                                                 const Graph& g, 
+                                                 CentralityMap centrality,
+                                                 EdgeCentralityMap edge_centrality_map,
+                                                 IncomingMap incoming, 
+                                                 DistanceMap distance, 
+                                                 DependencyMap dependency,
+                                                 PathCountMap path_count, 
+                                                 VertexIndexMap vertex_index,
+                                                 WeightMap weight_map,
+                                                 MultiplicityMap multiplicity_map,
+                                                 Buffer sources);
+
   // helper functions
   template<typename Graph, typename CentralityMap>
   typename property_traits<CentralityMap>::value_type
@@ -160,6 +178,10 @@ IN:  ``WeightMap weight_map``
   A model of `Readable Property Map`_ whose key type is the edge
   descriptor type of the graph ``g``.  If not supplied the betweenness
   centrality calculation will be unweighted.
+
+IN:  ``MultiplicityMap multiplicity_map``
+  A model of `Readable Property Map`_ whose key type is the edge
+  descriptor type of the graph ``g``.
 
 IN: ``Buffer sources`` 
   A model of Buffer_ containing the starting vertices for the
