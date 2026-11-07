@@ -38,6 +38,7 @@ test-suite graph_parallel
   [ mpi-test mesh_generator_test : : <testing.arg>"1000 1000 1 0" : 2 ]
   [ mpi-test named_vertices_seq : : : 1 ]
   [ mpi-test distributed_shortest_paths_test : : : 2 ]
+  [ mpi-test delta_stepping_rounding_test : : : 2 ]
   [ mpi-test distributed_csr_algorithm_test : : : 1 ]
   [ mpi-test distributed_betweenness_centrality_test : : : 2 ]
   [ mpi-test distributed_dimacs_reader : : : 2 ]
