@@ -27,6 +27,16 @@ jobs:
         run: echo ${{ matrix.compiler }} | awk '/^g/ { print "TOOLSET=gcc" } /^clang/ { print "TOOLSET=clang" }' >> $GITHUB_ENV
       - name: Install packages
         run: sudo apt-get update; sudo apt-get install -y g++-13 g++-14 clang-19 ${{matrix.mpi}}
+      - name: Fix noble mpich (LP 2072338)
+        if: matrix.mpi == 'mpich'
+        run: |
+          . /etc/os-release
+          if [ "$VERSION_ID" = "24.04" ]; then
+            wget -q https://launchpad.net/ubuntu/+source/mpich/4.2.0-5.1/+build/28285882/+files/libmpich12_4.2.0-5.1_amd64.deb https://launchpad.net/ubuntu/+source/mpich/4.2.0-5.1/+build/28285882/+files/libmpich-dev_4.2.0-5.1_amd64.deb https://launchpad.net/ubuntu/+source/mpich/4.2.0-5.1/+build/28285882/+files/mpich_4.2.0-5.1_amd64.deb
+            sudo dpkg -i libmpich12_4.2.0-5.1_amd64.deb libmpich-dev_4.2.0-5.1_amd64.deb mpich_4.2.0-5.1_amd64.deb
+          else
+            echo "Ubuntu $VERSION_ID is not 24.04; skipping the noble-specific mpich workaround (LP 2072338)."
+          fi
       - name: Checkout main boost
         run: git clone -b develop --depth 1 https://github.com/boostorg/boost.git ../boost-root
       - name: Update tools/boostdep
