@@ -12,6 +12,11 @@ project /boost/graph_parallel/test
         <library>/boost/graph_parallel//boost_graph_parallel
         <library>/boost/system//boost_system
         <library>/python//python
+        # Turn on standard library precondition checks (out-of-range
+        # operator[], etc.) so the tests catch them on every toolchain.
+        # Each macro is ignored by the other standard library.
+        <define>_GLIBCXX_ASSERTIONS
+        <define>_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE
     ;
 
 import mpi : mpi-test ;
