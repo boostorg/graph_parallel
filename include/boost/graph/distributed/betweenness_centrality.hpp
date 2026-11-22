@@ -1198,12 +1198,12 @@ namespace boost {
 
     using boost::parallel::all_reduce;
 
-    all_reduce(pg, &centrality_v[0], &centrality_v[centrality_v.size()],
-               &centrality_v[0], std::plus<centrality_type>());
+    all_reduce(pg, centrality_v.data(), centrality_v.data() + centrality_v.size(),
+               centrality_v.data(), std::plus<centrality_type>());
 
-    if (edge_centrality_v.size()) 
-      all_reduce(pg, &edge_centrality_v[0], &edge_centrality_v[edge_centrality_v.size()],
-                 &edge_centrality_v[0], std::plus<edge_centrality_type>());
+    if (edge_centrality_v.size())
+      all_reduce(pg, edge_centrality_v.data(), edge_centrality_v.data() + edge_centrality_v.size(),
+                 edge_centrality_v.data(), std::plus<edge_centrality_type>());
 
     BGL_FORALL_VERTICES_T(v, g, Graph) {
       put(centrality, v, centrality_v[get(vertex_index, v)]);
