@@ -27,6 +27,7 @@
 #include <boost/graph/distributed/filtered_graph.hpp>
 #include <boost/pending/indirect_cmp.hpp>
 #include <boost/graph/breadth_first_search.hpp>
+#include <boost/graph/strong_components.hpp>
 #include <boost/graph/graph_traits.hpp>
 #include <boost/graph/overloading.hpp>
 #include <boost/graph/distributed/concepts.hpp>
@@ -45,6 +46,7 @@
   #include <sys/time.h>
   #include <boost/graph/distributed/graphviz.hpp> // for ostringstream
 #endif
+#include <algorithm>
 #include <vector>
 #include <map>
 #include <boost/graph/parallel/container_traits.hpp>
@@ -701,6 +703,13 @@ namespace boost { namespace graph { namespace distributed {
          all_gather(pg, new_set.begin(), new_set.end(), vertex_sets[i]);
          std::sort(vertex_sets[i].begin(), vertex_sets[i].end(), std::less<vertex_descriptor>());
        }
+
+       // Drop sets emptied by trimming: each set's first vertex is the next BFS root
+       vertex_sets.erase(
+         std::remove_if( vertex_sets.begin(), vertex_sets.end(),
+                         []( const std::vector<vertex_descriptor>& s ) { return s.empty(); } ),
+         vertex_sets.end() );
+
 #ifdef PBGL_SCC_DEBUG
   end = accounting::get_time();
   if(id == 0)
