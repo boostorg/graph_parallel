@@ -1038,7 +1038,7 @@ namespace boost {
   template<typename Graph, typename CentralityMap, typename EdgeCentralityMap,
            typename IncomingMap, typename DistanceMap, typename DependencyMap, 
            typename PathCountMap, typename VertexIndexMap, typename ShortestPaths,
-           typename Stack>
+           typename MultiplicityMap, typename Stack>
   void
   do_sequential_brandes_sssp(const Graph& g, 
                              CentralityMap centrality,     
@@ -1049,6 +1049,7 @@ namespace boost {
                              PathCountMap path_count, 
                              VertexIndexMap vertex_index,
                              ShortestPaths shortest_paths,
+                             MultiplicityMap multiplicity_map,
                              Stack& ordered_vertices,
                              typename graph_traits<Graph>::vertex_descriptor v)
   {
@@ -1087,6 +1088,7 @@ namespace boost {
         vertex_descriptor v = source(*vw, g);
         dependency_type factor = dependency_type(get(path_count, v))
           / dependency_type(get(path_count, w));
+        factor *= dependency_type(get(multiplicity_map, *vw));
         factor *= (dependency_type(1) + get(dependency, w));
         put(dependency, v, get(dependency, v) + factor);
         update_centrality(edge_centrality_map, *vw, factor);
@@ -1106,7 +1108,7 @@ namespace boost {
            typename IncomingMap, typename DistanceMap, 
            typename DependencyMap, typename PathCountMap,
            typename VertexIndexMap, typename ShortestPaths,
-           typename Buffer>
+           typename MultiplicityMap, typename Buffer>
   void
   non_distributed_brandes_betweenness_centrality_impl(const ProcessGroup& pg,
                                                       const Graph& g,
@@ -1118,6 +1120,7 @@ namespace boost {
                                                       PathCountMap path_count,      // sigma
                                                       VertexIndexMap vertex_index,
                                                       ShortestPaths shortest_paths,
+                                                      MultiplicityMap multiplicity_map,
                                                       Buffer sources)
   {
     using boost::detail::graph::init_centrality_map;
@@ -1151,7 +1154,8 @@ namespace boost {
       for(size_t i = 0; i < local_sources.size(); ++i)
         do_sequential_brandes_sssp(g, centrality, edge_centrality_map, incoming,
                                    distance, dependency, path_count, vertex_index,
-                                   shortest_paths, ordered_vertices, local_sources[i]);
+                                   shortest_paths, multiplicity_map,
+                                   ordered_vertices, local_sources[i]);
 
     } else { // Exact Betweenness Centrality
       typedef typename graph_traits<Graph>::vertices_size_type vertices_size_type;
@@ -1162,7 +1166,8 @@ namespace boost {
 
         do_sequential_brandes_sssp(g, centrality, edge_centrality_map, incoming,
                                    distance, dependency, path_count, vertex_index,
-                                   shortest_paths, ordered_vertices, v);
+                                   shortest_paths, multiplicity_map,
+                                   ordered_vertices, v);
       }
     }
 
@@ -1237,6 +1242,12 @@ brandes_betweenness_centrality(const Graph& g,
                                typename property_traits<DistanceMap>::value_type delta
                                BOOST_GRAPH_ENABLE_IF_MODELS_PARM(Graph,distributed_graph_tag))
 {
+
+  // default constant multiplicity of one
+  typedef typename property_traits<PathCountMap>::value_type multiplicity_type;
+  typedef static_property_map<multiplicity_type> MultiplicityMap;
+  MultiplicityMap multiplicity_map(multiplicity_type(1));
+
   typedef typename property_traits<DistanceMap>::value_type distance_type;
   typedef static_property_map<distance_type> WeightMap;
 
@@ -1450,7 +1461,14 @@ non_distributed_brandes_betweenness_centrality(const ProcessGroup& pg,
                                                VertexIndexMap vertex_index,
                                                Buffer sources)
 {
-  detail::graph::brandes_unweighted_shortest_paths shortest_paths;
+  // default constant multiplicity of one
+  typedef typename property_traits<PathCountMap>::value_type multiplicity_type;
+  typedef static_property_map<multiplicity_type> MultiplicityMap;
+  MultiplicityMap multiplicity_map(multiplicity_type(1));
+
+  typedef detail::graph::make_shortest_paths<dummy_property_map, MultiplicityMap> make;
+  typedef typename make::type ShortestPaths;
+  ShortestPaths shortest_paths = make()(dummy_property_map(), multiplicity_map);
   
   graph::parallel::detail::non_distributed_brandes_betweenness_centrality_impl(pg, g, centrality, 
                                                                                edge_centrality_map,
@@ -1458,6 +1476,7 @@ non_distributed_brandes_betweenness_centrality(const ProcessGroup& pg,
                                                                                dependency, path_count,
                                                                                vertex_index, 
                                                                                shortest_paths,
+                                                                               multiplicity_map,
                                                                                sources);
 }
   
@@ -1478,7 +1497,39 @@ non_distributed_brandes_betweenness_centrality(const ProcessGroup& pg,
                                                WeightMap weight_map,
                                                Buffer sources)
 {
-  detail::graph::brandes_dijkstra_shortest_paths<WeightMap> shortest_paths(weight_map);
+  // default constant multiplicity of one
+  typedef typename property_traits<PathCountMap>::value_type multiplicity_type;
+  typedef static_property_map<multiplicity_type> MultiplicityMap;
+  MultiplicityMap multiplicity_map(multiplicity_type(1));
+
+  non_distributed_brandes_betweenness_centrality(pg, g, centrality, edge_centrality_map,
+                                                 incoming, distance, dependency,
+                                                 path_count, vertex_index,
+                                                 weight_map, multiplicity_map,
+                                                 sources);
+}
+  
+template<typename ProcessGroup, typename Graph, typename CentralityMap, 
+         typename EdgeCentralityMap, typename IncomingMap, typename DistanceMap, 
+         typename DependencyMap, typename PathCountMap, typename VertexIndexMap, 
+         typename WeightMap, typename MultiplicityMap, typename Buffer>
+void 
+non_distributed_brandes_betweenness_centrality(const ProcessGroup& pg,
+                                               const Graph& g, 
+                                               CentralityMap centrality,
+                                               EdgeCentralityMap edge_centrality_map,
+                                               IncomingMap incoming, 
+                                               DistanceMap distance, 
+                                               DependencyMap dependency,
+                                               PathCountMap path_count, 
+                                               VertexIndexMap vertex_index,
+                                               WeightMap weight_map,
+                                               MultiplicityMap multiplicity_map,
+                                               Buffer sources)
+{
+  typedef detail::graph::make_shortest_paths<WeightMap, MultiplicityMap> make;
+  typedef typename make::type ShortestPaths;
+  ShortestPaths shortest_paths = make()(weight_map, multiplicity_map);
 
   graph::parallel::detail::non_distributed_brandes_betweenness_centrality_impl(pg, g, centrality, 
                                                                                edge_centrality_map,
@@ -1486,19 +1537,21 @@ non_distributed_brandes_betweenness_centrality(const ProcessGroup& pg,
                                                                                dependency, path_count,
                                                                                vertex_index, 
                                                                                shortest_paths,
+                                                                               multiplicity_map,
                                                                                sources);
 }
 
 namespace detail { namespace graph {
   template<typename ProcessGroup, typename Graph, typename CentralityMap, 
-           typename EdgeCentralityMap, typename WeightMap, typename VertexIndexMap,
-           typename Buffer>
+           typename EdgeCentralityMap, typename WeightMap, typename MultiplicityMap,
+           typename VertexIndexMap, typename Buffer>
   void 
   non_distributed_brandes_betweenness_centrality_dispatch2(const ProcessGroup& pg,
                                                            const Graph& g,
                                                            CentralityMap centrality,
                                                            EdgeCentralityMap edge_centrality_map,
                                                            WeightMap weight_map,
+                                                           MultiplicityMap multiplicity_map,
                                                            VertexIndexMap vertex_index,
                                                            Buffer sources)
   {
@@ -1524,7 +1577,7 @@ namespace detail { namespace graph {
       make_iterator_property_map(distance.begin(), vertex_index),
       make_iterator_property_map(dependency.begin(), vertex_index),
       make_iterator_property_map(path_count.begin(), vertex_index),
-      vertex_index, weight_map, unwrap_ref(sources));
+      vertex_index, weight_map, multiplicity_map, unwrap_ref(sources));
   }
   
 
@@ -1563,7 +1616,7 @@ namespace detail { namespace graph {
       vertex_index, unwrap_ref(sources));
   }
 
-  template<typename WeightMap>
+  template<typename WeightMap, typename MultiplicityMap>
   struct non_distributed_brandes_betweenness_centrality_dispatch1
   {
     template<typename ProcessGroup, typename Graph, typename CentralityMap, 
@@ -1571,22 +1624,64 @@ namespace detail { namespace graph {
     static void 
     run(const ProcessGroup& pg, const Graph& g, CentralityMap centrality, 
         EdgeCentralityMap edge_centrality_map, VertexIndexMap vertex_index,
-        Buffer sources, WeightMap weight_map)
+        Buffer sources, WeightMap weight_map, MultiplicityMap multiplicity_map)
     {
       non_distributed_brandes_betweenness_centrality_dispatch2(pg, g, centrality, edge_centrality_map,
-                                                               weight_map, vertex_index, sources);
+                                                               weight_map, multiplicity_map,
+                                                               vertex_index, sources);
     }
   };
 
-  template<>
-  struct non_distributed_brandes_betweenness_centrality_dispatch1<param_not_found>
+  template<typename WeightMap>
+  struct non_distributed_brandes_betweenness_centrality_dispatch1<WeightMap, param_not_found>
   {
     template<typename ProcessGroup, typename Graph, typename CentralityMap, 
              typename EdgeCentralityMap, typename VertexIndexMap, typename Buffer>
     static void 
     run(const ProcessGroup& pg, const Graph& g, CentralityMap centrality, 
         EdgeCentralityMap edge_centrality_map, VertexIndexMap vertex_index,
-        Buffer sources, param_not_found)
+        Buffer sources, WeightMap weight_map, param_not_found)
+    {
+      // default constant multiplicity of one
+      typedef typename mpl::if_<is_same<CentralityMap, dummy_property_map>,
+                                EdgeCentralityMap, CentralityMap>::type
+                                a_centrality_map;
+      typedef typename property_traits<a_centrality_map>::value_type multiplicity_type;
+      typedef static_property_map<multiplicity_type> MultiplicityMap;
+      MultiplicityMap multiplicity_map(multiplicity_type(1));
+
+      non_distributed_brandes_betweenness_centrality_dispatch2(pg, g, centrality, edge_centrality_map,
+                                                               weight_map, multiplicity_map,
+                                                               vertex_index, sources);
+    }
+  };
+
+  template<typename MultiplicityMap>
+  struct non_distributed_brandes_betweenness_centrality_dispatch1<param_not_found, MultiplicityMap>
+  {
+    template<typename ProcessGroup, typename Graph, typename CentralityMap, 
+             typename EdgeCentralityMap, typename VertexIndexMap, typename Buffer>
+    static void 
+    run(const ProcessGroup& pg, const Graph& g, CentralityMap centrality, 
+        EdgeCentralityMap edge_centrality_map, VertexIndexMap vertex_index,
+        Buffer sources, param_not_found, MultiplicityMap multiplicity_map)
+    {
+      // default weight to dummy property map
+      non_distributed_brandes_betweenness_centrality_dispatch2(pg, g, centrality, edge_centrality_map,
+                                                               dummy_property_map(), multiplicity_map,
+                                                               vertex_index, sources);
+    }
+  };
+
+  template<>
+  struct non_distributed_brandes_betweenness_centrality_dispatch1<param_not_found, param_not_found>
+  {
+    template<typename ProcessGroup, typename Graph, typename CentralityMap, 
+             typename EdgeCentralityMap, typename VertexIndexMap, typename Buffer>
+    static void 
+    run(const ProcessGroup& pg, const Graph& g, CentralityMap centrality, 
+        EdgeCentralityMap edge_centrality_map, VertexIndexMap vertex_index,
+        Buffer sources, param_not_found, param_not_found)
     {
       non_distributed_brandes_betweenness_centrality_dispatch2(pg, g, centrality, edge_centrality_map,
                                                                vertex_index, sources);
@@ -1605,9 +1700,9 @@ non_distributed_brandes_betweenness_centrality(const ProcessGroup& pg, const Gra
   typedef queue<int> queue_t;
   queue_t q;
 
-  typedef typename get_param_type<edge_weight_t, named_params>::type ew_param;
-  typedef typename detail::choose_impl_result<mpl::true_, Graph, ew_param, edge_weight_t>::type ew;
-  detail::graph::non_distributed_brandes_betweenness_centrality_dispatch1<ew>::run(
+  typedef typename get_param_type<edge_weight_t, named_params>::type ew;
+  typedef typename get_param_type<edge_multiplicity_t, named_params>::type em;
+  detail::graph::non_distributed_brandes_betweenness_centrality_dispatch1<ew, em>::run(
     pg, g, 
     choose_param(get_param(params, vertex_centrality), 
                  dummy_property_map()),
@@ -1615,7 +1710,8 @@ non_distributed_brandes_betweenness_centrality(const ProcessGroup& pg, const Gra
                  dummy_property_map()),
     choose_const_pmap(get_param(params, vertex_index), g, vertex_index),
     choose_param(get_param(params, buffer_param_t()),  boost::ref(q)),
-    choose_const_pmap(get_param(params, edge_weight), g, edge_weight));
+    get_param(params, edge_weight),
+    get_param(params, edge_multiplicity_t()));
 }
 
 template<typename ProcessGroup, typename Graph, typename CentralityMap>
