@@ -345,8 +345,9 @@ run(Vertex s)
           relax(u, target(e, g), u_dist + get(weight, e)); 
     }
 
-    // Go to the next bucket: the current bucket must already be empty.
-    ++current_bucket;
+    // Floating-point rounding can put a heavy-edge target back in this
+    // bucket. Let the next global nonempty-bucket search advance the cursor
+    // only after that work has also been processed.
   } while (true);
 
   // Delete all of the buckets.
